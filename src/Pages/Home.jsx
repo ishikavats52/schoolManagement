@@ -59,8 +59,8 @@ const StatCard = ({ title, value, icon, color, trend, footer, subtitle }) => (
         <h3 className="text-3xl font-bold text-slate-900 mt-2">{value}</h3>
         {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
       </div>
-      <div className={`p-3 rounded-xl ${color} bg-opacity-10`}>
-        <div className={`${color.replace('bg-', 'text-')}`}>{icon}</div>
+      <div className={`p-3 rounded-xl ${color}`}>
+        <div className="text-white">{icon}</div>
       </div>
     </div>
     {footer && (
@@ -292,8 +292,8 @@ function Home() {
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-semibold ${event.status === 'confirmed'
-                    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                    : 'bg-amber-100 text-amber-700 border border-amber-200'
+                  ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                  : 'bg-amber-100 text-amber-700 border border-amber-200'
                   }`}>
                   {event.status === 'confirmed' ? <CheckCircle size={12} className="inline mr-1" /> : <Clock size={12} className="inline mr-1" />}
                   {event.status}
@@ -317,9 +317,9 @@ function Home() {
               <div key={student.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${student.rank === 1 ? 'bg-amber-100 text-amber-700' :
-                      student.rank === 2 ? 'bg-slate-200 text-slate-700' :
-                        student.rank === 3 ? 'bg-orange-100 text-orange-700' :
-                          'bg-slate-100 text-slate-600'
+                    student.rank === 2 ? 'bg-slate-200 text-slate-700' :
+                      student.rank === 3 ? 'bg-orange-100 text-orange-700' :
+                        'bg-slate-100 text-slate-600'
                     }`}>
                     #{student.rank}
                   </div>
