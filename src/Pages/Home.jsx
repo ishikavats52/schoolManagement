@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AddEventModal from '../Components/AddEventModal';
 import { Users, GraduationCap, Banknote, TrendingUp, UserPlus, FileText, Megaphone, AlertCircle, Clock, CheckCircle, XCircle, Calendar, Award, BookOpen, DollarSign } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
 
@@ -36,7 +37,7 @@ const recentActivities = [
   { id: 5, type: 'user', user: 'Admin', action: 'Added new teacher: Robert Brown', time: '3 hours ago', icon: Users, color: 'slate' },
 ];
 
-const upcomingEvents = [
+const initialEvents = [
   { id: 1, title: 'Parent-Teacher Meeting', date: '2026-02-15', time: '10:00 AM', attendees: 45, status: 'confirmed' },
   { id: 2, title: 'Annual Sports Day', date: '2026-02-20', time: '9:00 AM', attendees: 320, status: 'confirmed' },
   { id: 3, title: 'Science Fair', date: '2026-02-25', time: '2:00 PM', attendees: 150, status: 'pending' },
@@ -76,6 +77,28 @@ const StatCard = ({ title, value, icon, color, trend, footer, subtitle }) => (
 
 function Home() {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
+  const [events, setEvents] = useState(initialEvents);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+
+  const handleSaveEvent = (eventData) => {
+    if (editingEvent) {
+      setEvents(events.map(e => e.id === editingEvent.id ? { ...e, ...eventData } : e));
+    } else {
+      const event = {
+        id: events.length + 1,
+        ...eventData
+      };
+      setEvents([...events, event]);
+    }
+    setIsModalOpen(false);
+    setEditingEvent(null);
+  };
+
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setIsModalOpen(true);
+  };
 
   const getActivityColor = (color) => {
     const colors = {
@@ -255,7 +278,7 @@ function Home() {
               const Icon = activity.icon;
               return (
                 <div key={activity.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                  <div className={`p-2 rounded-lg ${getActivityColor(activity.color)} flex-shrink-0`}>
+                  <div className={`p-2 rounded-lg ${getActivityColor(activity.color)} shrink-0`}>
                     <Icon size={16} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -272,13 +295,23 @@ function Home() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-bold text-slate-900">Upcoming Events</h3>
-            <button className="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1">
+            <button
+              onClick={() => {
+                setEditingEvent(null);
+                setIsModalOpen(true);
+              }}
+              className="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1"
+            >
               <Calendar size={14} /> Add Event
             </button>
           </div>
           <div className="space-y-3">
-            {upcomingEvents.map((event) => (
-              <div key={event.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-blue-300 transition-colors">
+            {events.map((event) => (
+              <div
+                key={event.id}
+                className="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-blue-300  text-slate-600 transition-colors cursor-pointer group"
+                onClick={() => handleEditEvent(event)}
+              >
                 <div className="flex items-center gap-3">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-slate-900">{new Date(event.date).getDate()}</div>
@@ -346,7 +379,7 @@ function Home() {
           </div>
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 rounded-xl border border-blue-200 flex gap-4">
-              <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shrink-0">
                 <FileText size={20} />
               </div>
               <div>
@@ -356,7 +389,7 @@ function Home() {
               </div>
             </div>
             <div className="p-4 bg-orange-50 rounded-xl border border-orange-200 flex gap-4">
-              <div className="h-10 w-10 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="h-10 w-10 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center shrink-0">
                 <AlertCircle size={20} />
               </div>
               <div>
@@ -398,6 +431,15 @@ function Home() {
           </button>
         </div>
       </div>
+      <AddEventModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingEvent(null);
+        }}
+        onSave={handleSaveEvent}
+        eventToEdit={editingEvent}
+      />
     </div>
   );
 }

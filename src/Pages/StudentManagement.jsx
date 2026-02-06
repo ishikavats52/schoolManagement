@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    Search, Filter, Plus, Edit, Trash2, Eye, GraduationCap,
+    Search, Filter, Plus, Edit, Trash2, GraduationCap,
     MapPin, Phone, Mail, User, FileText, Calendar, Check, X,
     ChevronRight, ArrowUpRight, CreditCard, Key, Upload, Download
 } from 'lucide-react';
@@ -79,6 +79,7 @@ const StudentManagement = ({ view = 'directory' }) => {
 const StudentDirectory = ({ students, setStudents, showToast }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingStudent, setEditingStudent] = useState(null);
     const [newStudent, setNewStudent] = useState({
         name: '', email: '', class: '', section: '', rollNo: '', parentName: '', parentPhone: ''
     });
@@ -93,19 +94,40 @@ const StudentDirectory = ({ students, setStudents, showToast }) => {
             showToast('Please fill in required fields', 'error');
             return;
         }
-        const student = {
-            id: students.length + 1,
-            studentId: `STU00${students.length + 1}`,
-            ...newStudent,
-            attendance: 0,
-            status: 'Active',
-            hasLogin: false,
-            username: ''
-        };
-        setStudents([...students, student]);
+
+        if (editingStudent) {
+            setStudents(students.map(s => s.id === editingStudent.id ? { ...s, ...newStudent } : s));
+            showToast('Student updated successfully!');
+        } else {
+            const student = {
+                id: students.length + 1,
+                studentId: `STU00${students.length + 1}`,
+                ...newStudent,
+                attendance: 0,
+                status: 'Active',
+                hasLogin: false,
+                username: ''
+            };
+            setStudents([...students, student]);
+            showToast('Student added successfully!');
+        }
         setIsModalOpen(false);
         setNewStudent({ name: '', email: '', class: '', section: '', rollNo: '', parentName: '', parentPhone: '' });
-        showToast('Student added successfully!');
+        setEditingStudent(null);
+    };
+
+    const handleEdit = (student) => {
+        setEditingStudent(student);
+        setNewStudent({
+            name: student.name,
+            email: student.email,
+            class: student.class,
+            section: student.section,
+            rollNo: student.rollNo,
+            parentName: student.parentName,
+            parentPhone: student.parentPhone
+        });
+        setIsModalOpen(true);
     };
 
     const handleDelete = (id) => {
@@ -166,8 +188,13 @@ const StudentDirectory = ({ students, setStudents, showToast }) => {
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                     <div className="flex justify-center gap-2">
-                                        <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-blue-600"><Eye size={16} /></button>
-                                        <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-amber-600"><Edit size={16} /></button>
+                                        
+                                        <button
+                                            onClick={() => handleEdit(student)}
+                                            className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-amber-600"
+                                        >
+                                            <Edit size={16} />
+                                        </button>
                                         <button onClick={() => handleDelete(student.id)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-rose-600"><Trash2 size={16} /></button>
                                     </div>
                                 </td>
@@ -182,8 +209,8 @@ const StudentDirectory = ({ students, setStudents, showToast }) => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden">
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-slate-900">Add New Student</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                            <h2 className="text-xl font-bold text-slate-900">{editingStudent ? 'Edit Student' : 'Add New Student'}</h2>
+                            <button onClick={() => { setIsModalOpen(false); setEditingStudent(null); }} className="text-slate-400 hover:text-slate-600">
                                 <X size={24} />
                             </button>
                         </div>
@@ -264,7 +291,7 @@ const StudentDirectory = ({ students, setStudents, showToast }) => {
                                 onClick={handleAddStudent}
                                 className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                             >
-                                Save Student
+                                {editingStudent ? 'Update Student' : 'Save Student'}
                             </button>
                         </div>
                     </div>
@@ -439,7 +466,7 @@ const StudentIDCards = ({ students, showToast }) => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {students.map(student => (
-                    <div key={student.id} className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                    <div key={student.id} className="bg-blue-600 rounded-2xl p-6 text-white relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                         <div className="absolute top-0 right-0 p-4 opacity-20"><CreditCard size={100} /></div>
                         <div className="relative z-10 flex items-start gap-4">
                             <div className="h-20 w-20 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold border-2 border-white/30">

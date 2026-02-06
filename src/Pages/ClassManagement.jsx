@@ -169,7 +169,7 @@ const ClassManagement = () => {
         {/* Add New Class Card Placeholder */}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-600 transition-all min-h-[200px]"
+          className="border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-600 transition-all min-h-50"
         >
           <Plus size={32} />
           <span className="font-medium mt-2">Create New Class</span>

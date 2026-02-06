@@ -64,6 +64,7 @@ const ParentManagement = ({ view = 'directory' }) => {
 const ParentDirectory = ({ parents, setParents, showToast }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingParent, setEditingParent] = useState(null);
     const [newParent, setNewParent] = useState({
         name: '', email: '', phone: '', relationship: 'Father', linkedStudents: 0
     });
@@ -78,19 +79,38 @@ const ParentDirectory = ({ parents, setParents, showToast }) => {
             showToast('Please fill in required fields', 'error');
             return;
         }
-        const parent = {
-            id: parents.length + 1,
-            parentId: `PAR00${parents.length + 1}`,
-            ...newParent,
-            status: 'Active',
-            hasLogin: false,
-            username: '',
-            children: []
-        };
-        setParents([...parents, parent]);
+
+        if (editingParent) {
+            setParents(parents.map(p => p.id === editingParent.id ? { ...p, ...newParent } : p));
+            showToast('Parent updated successfully!');
+        } else {
+            const parent = {
+                id: parents.length + 1,
+                parentId: `PAR00${parents.length + 1}`,
+                ...newParent,
+                status: 'Active',
+                hasLogin: false,
+                username: '',
+                children: []
+            };
+            setParents([...parents, parent]);
+            showToast('Parent added successfully!');
+        }
         setIsModalOpen(false);
         setNewParent({ name: '', email: '', phone: '', relationship: 'Father', linkedStudents: 0 });
-        showToast('Parent added successfully!');
+        setEditingParent(null);
+    };
+
+    const handleEdit = (parent) => {
+        setEditingParent(parent);
+        setNewParent({
+            name: parent.name,
+            email: parent.email,
+            phone: parent.phone,
+            relationship: parent.relationship,
+            linkedStudents: parent.linkedStudents || 0
+        });
+        setIsModalOpen(true);
     };
 
     const handleDelete = (id) => {
@@ -169,7 +189,13 @@ const ParentDirectory = ({ parents, setParents, showToast }) => {
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                     <div className="flex justify-center gap-1">
-                                        <button className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50" title="Edit"><Edit size={16} /></button>
+                                        <button
+                                            onClick={() => handleEdit(parent)}
+                                            className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50"
+                                            title="Edit"
+                                        >
+                                            <Edit size={16} />
+                                        </button>
                                         <button className="p-2 text-slate-400 hover:text-green-600 rounded-lg hover:bg-green-50" title="Link Student"><LinkIcon size={16} /></button>
                                         <button onClick={() => handleDelete(parent.id)} className="p-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50" title="Delete"><Trash2 size={16} /></button>
                                     </div>
@@ -185,8 +211,8 @@ const ParentDirectory = ({ parents, setParents, showToast }) => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden">
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-slate-900">Add New Parent</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                            <h2 className="text-xl font-bold text-slate-900">{editingParent ? 'Edit Parent' : 'Add New Parent'}</h2>
+                            <button onClick={() => { setIsModalOpen(false); setEditingParent(null); }} className="text-slate-400 hover:text-slate-600">
                                 <X size={24} />
                             </button>
                         </div>
@@ -247,7 +273,7 @@ const ParentDirectory = ({ parents, setParents, showToast }) => {
                                 onClick={handleAddParent}
                                 className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                             >
-                                Save Parent
+                                {editingParent ? 'Update Parent' : 'Save Parent'}
                             </button>
                         </div>
                     </div>
@@ -365,7 +391,7 @@ const ParentNotifications = ({ parents, showToast }) => {
                 <div className="space-y-4">
                     {[1, 2, 3].map((_, i) => (
                         <div key={i} className="flex gap-3 text-sm border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                            <div className="mt-1 min-w-[4px] h-4 bg-blue-200 rounded-full"></div>
+                            <div className="mt-1 min-w-1 h-4 bg-blue-200 rounded-full"></div>
                             <div>
                                 <p className="font-medium text-slate-800">Fee Payment Reminder</p>
                                 <p className="text-slate-500 text-xs mt-0.5">Sent to All Parents • 2 days ago</p>

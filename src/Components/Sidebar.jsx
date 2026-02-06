@@ -51,19 +51,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 //     path: '/UserManagement',
                 //     icon: ShieldCheck
                 // },
-                {
-                    id: 'teacher_nested',
-                    title: 'Teacher Management',
-                    icon: UserCog,
-                    type: 'nested_group',
-                    subMenus: [
-                        { title: 'Directory', path: '/TeacherManagement', icon: Users },
-                        { title: 'Timetable', path: '/teachers/timetable', icon: CalendarCheck },
-                        { title: 'Attendance', path: '/teachers/attendance', icon: ClipboardList },
-                        { title: 'Leaves', path: '/teachers/leaves', icon: Calendar }, // Changed icon from FileText to Calendar
-                        { title: 'Credentials', path: '/teachers/credentials', icon: Key },
-                    ]
-                },
+               
                 {
                     id: 'principal_nested',
                     title: 'Principal Management',
@@ -77,16 +65,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                         { title: 'Communication', path: '/principals/communication', icon: Mail },
                     ]
                 },
-                {
-                    id: 'parent_nested',
-                    title: 'Parent Management',
-                    icon: UsersRound,
+                 {
+                    id: 'teacher_nested',
+                    title: 'Teacher Management',
+                    icon: UserCog,
                     type: 'nested_group',
                     subMenus: [
-                        { title: 'Directory', path: '/ParentManagement', icon: Users },
-                        { title: 'Login Control', path: '/parents/login-control', icon: Key },
-                        { title: 'Notifications', path: '/parents/notifications', icon: Bell },
-                        { title: 'Activity Log', path: '/parents/activity', icon: Activity },
+                        { title: 'Directory', path: '/TeacherManagement', icon: Users },
+                        { title: 'Timetable', path: '/teachers/timetable', icon: CalendarCheck },
+                        { title: 'Attendance', path: '/teachers/attendance', icon: ClipboardList },
+                        { title: 'Leaves', path: '/teachers/leaves', icon: Calendar }, // Changed icon from FileText to Calendar
+                        { title: 'Credentials', path: '/teachers/credentials', icon: Key },
                     ]
                 },
                 {
@@ -102,7 +91,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                         { title: 'ID Cards', path: '/students/id-cards', icon: CreditCard },
                         { title: 'Credentials', path: '/students/credentials', icon: Key },
                     ]
-                }
+                },
+                {
+                    id: 'parent_nested',
+                    title: 'Parent Management',
+                    icon: UsersRound,
+                    type: 'nested_group',
+                    subMenus: [
+                        { title: 'Directory', path: '/ParentManagement', icon: Users },
+                        { title: 'Login Control', path: '/parents/login-control', icon: Key },
+                        { title: 'Notifications', path: '/parents/notifications', icon: Bell },
+                        { title: 'Activity Log', path: '/parents/activity', icon: Activity },
+                    ]
+                },
+                
             ]
         },
         {

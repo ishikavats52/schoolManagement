@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    Search, Filter, Plus, Edit, Trash2, User, UserPlus,
+    Search, Plus, Edit, Trash2, User, UserPlus,
     Shield, FileText, Activity, Mail, Check, X,
     Lock, Eye, BarChart2, MessageSquare, Send, Clock
 } from 'lucide-react';
@@ -64,6 +64,7 @@ const PrincipalManagement = ({ view = 'directory' }) => {
 
 const PrincipalDirectory = ({ principals, setPrincipals, showToast }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingPrincipal, setEditingPrincipal] = useState(null);
     const [newPrincipal, setNewPrincipal] = useState({ name: '', email: '', role: 'Vice Principal' });
 
     const handleAdd = () => {
@@ -71,23 +72,40 @@ const PrincipalDirectory = ({ principals, setPrincipals, showToast }) => {
             showToast('Please fill required fields', 'error');
             return;
         }
-        setPrincipals([...principals, {
-            id: principals.length + 1,
-            ...newPrincipal,
-            status: 'Active',
-            permissions: { teachers: true, financials: false, curriculum: true, settings: false }
-        }]);
+
+        if (editingPrincipal) {
+            setPrincipals(principals.map(p => p.id === editingPrincipal.id ? { ...p, ...newPrincipal } : p));
+            showToast('Account updated successfully');
+        } else {
+            setPrincipals([...principals, {
+                id: principals.length + 1,
+                ...newPrincipal,
+                status: 'Active',
+                permissions: { teachers: true, financials: false, curriculum: true, settings: false }
+            }]);
+            showToast('Account created successfully');
+        }
         setIsModalOpen(false);
         setNewPrincipal({ name: '', email: '', role: 'Vice Principal' });
-        showToast('Account created successfully');
+        setEditingPrincipal(null);
+    };
+
+    const handleEdit = (principal) => {
+        setEditingPrincipal(principal);
+        setNewPrincipal({
+            name: principal.name,
+            email: principal.email,
+            role: principal.role
+        });
+        setIsModalOpen(true);
     };
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="p-4 border-b border-slate-200 flex justify-between items-center">
-                <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 w-96">
+                <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg text-slate-600 border border-slate-200 w-96">
                     <Search className="text-slate-500" size={18} />
-                    <input type="text" placeholder="Search principals..." className="bg-transparent border-none outline-none text-sm w-full" />
+                    <input type="text" placeholder="Search principals..." className="bg-transparent border-none outline-none text-sm w-full text-slate-900 placeholder-slate-4001" />
                 </div>
                 <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 hover:bg-blue-700">
                     <Plus size={20} /> Add Account
@@ -115,7 +133,7 @@ const PrincipalDirectory = ({ principals, setPrincipals, showToast }) => {
                             <td className="px-6 py-4">{p.email}</td>
                             <td className="px-6 py-4 text-emerald-600 font-medium">Active</td>
                             <td className="px-6 py-4 text-center flex justify-center gap-2">
-                                <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Edit size={16} /></button>
+                                <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg" onClick={() => handleEdit(p)}><Edit size={16} /></button>
                                 <button className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg"><Trash2 size={16} /></button>
                             </td>
                         </tr>
@@ -125,8 +143,8 @@ const PrincipalDirectory = ({ principals, setPrincipals, showToast }) => {
 
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl">
-                        <h2 className="text-xl font-bold mb-4">Create Account</h2>
+                    <div className="bg-white text-slate-700 rounded-2xl w-full max-w-md p-6 shadow-xl">
+                        <h2 className="text-xl font-bold mb-4">{editingPrincipal ? 'Edit Account' : 'Create Account'}</h2>
                         <div className="space-y-4">
                             <input className="w-full border p-2 rounded-lg" placeholder="Name" value={newPrincipal.name} onChange={e => setNewPrincipal({ ...newPrincipal, name: e.target.value })} />
                             <input className="w-full border p-2 rounded-lg" placeholder="Email" value={newPrincipal.email} onChange={e => setNewPrincipal({ ...newPrincipal, email: e.target.value })} />
@@ -135,8 +153,8 @@ const PrincipalDirectory = ({ principals, setPrincipals, showToast }) => {
                                 <option>Vice Principal</option>
                             </select>
                             <div className="flex justify-end gap-2 mt-4">
-                                <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 hover:bg-slate-100 rounded-lg">Cancel</button>
-                                <button onClick={handleAdd} className="px-4 py-2 bg-blue-600 text-white rounded-lg">Create</button>
+                                <button onClick={() => { setIsModalOpen(false); setEditingPrincipal(null); }} className="px-4 py-2 hover:bg-slate-100 rounded-lg">Cancel</button>
+                                <button onClick={handleAdd} className="px-4 py-2 bg-blue-600 text-white rounded-lg">{editingPrincipal ? 'Update' : 'Create'}</button>
                             </div>
                         </div>
                     </div>
@@ -204,7 +222,7 @@ const PrincipalReports = ({ showToast }) => {
                     </div>
                     <h3 className="font-bold text-slate-900 mb-1">{report.title}</h3>
                     <p className="text-sm text-slate-500 mb-4">Generated: {report.date}</p>
-                    <button onClick={() => showToast(`Downloading ${report.title}...`)} className="w-full py-2 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition">
+                    <button onClick={() => showToast(`Downloading ${report.title}...`)} className="w-full py-2 border border-slate-200 rounded-lg text-slate-900 text-sm font-medium hover:bg-slate-50 transition">
                         Download Report
                     </button>
                 </div>
@@ -242,7 +260,7 @@ const TeacherPerformance = () => {
                                 <span className="text-amber-500">★</span> {t.rating}
                             </td>
                             <td className="px-6 py-4">
-                                <div className="w-full bg-slate-100 rounded-full h-2 w-24">
+                                <div className="bg-slate-100 rounded-full h-2 w-24">
                                     <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${t.passRate}%` }}></div>
                                 </div>
                                 <span className="text-xs text-slate-500 mt-1 block">{t.passRate}%</span>

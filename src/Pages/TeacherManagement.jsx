@@ -73,6 +73,7 @@ const TeacherManagement = ({ view = 'directory' }) => {
 const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingTeacher, setEditingTeacher] = useState(null);
     const [newTeacher, setNewTeacher] = useState({
         name: '', email: '', phone: '', subject: '', education: ''
     });
@@ -87,18 +88,37 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
             showToast('Please fill all required fields', 'error');
             return;
         }
-        setTeachers([...teachers, {
-            id: teachers.length + 1,
-            employeeId: `TCH00${teachers.length + 1}`,
-            ...newTeacher,
-            classes: [],
-            status: 'Active',
-            experience: '0 Years',
-            hasLogin: false
-        }]);
+
+        if (editingTeacher) {
+            setTeachers(teachers.map(t => t.id === editingTeacher.id ? { ...t, ...newTeacher } : t));
+            showToast('Teacher updated successfully');
+        } else {
+            setTeachers([...teachers, {
+                id: teachers.length + 1,
+                employeeId: `TCH00${teachers.length + 1}`,
+                ...newTeacher,
+                classes: [],
+                status: 'Active',
+                experience: '0 Years',
+                hasLogin: false
+            }]);
+            showToast('Teacher added successfully');
+        }
         setIsModalOpen(false);
         setNewTeacher({ name: '', email: '', phone: '', subject: '', education: '' });
-        showToast('Teacher added successfully');
+        setEditingTeacher(null);
+    };
+
+    const handleEdit = (teacher) => {
+        setEditingTeacher(teacher);
+        setNewTeacher({
+            name: teacher.name,
+            email: teacher.email,
+            phone: teacher.phone,
+            subject: teacher.subject,
+            education: teacher.education
+        });
+        setIsModalOpen(true);
     };
 
     return (
@@ -170,7 +190,11 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
                                 </td>
                                 <td className="px-6 py-4 text-center">
                                     <div className="flex justify-center gap-1">
-                                        <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg" title="Edit">
+                                        <button
+                                            onClick={() => handleEdit(teacher)}
+                                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                                            title="Edit"
+                                        >
                                             <Edit size={16} />
                                         </button>
                                         <button className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg" title="Assign Classes">
@@ -191,8 +215,8 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden">
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-slate-900">Add New Teacher</h2>
-                            <button onClick={() => setIsModalOpen(false)}><X className="text-slate-400" /></button>
+                            <h2 className="text-xl font-bold text-slate-900">{editingTeacher ? 'Edit Teacher' : 'Add New Teacher'}</h2>
+                            <button onClick={() => { setIsModalOpen(false); setEditingTeacher(null); }}><X className="text-slate-400" /></button>
                         </div>
                         <div className="p-6 space-y-4">
                             <input className="w-full px-3 py-2 border rounded-lg" placeholder="Full Name" value={newTeacher.name} onChange={e => setNewTeacher({ ...newTeacher, name: e.target.value })} />
@@ -203,7 +227,7 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
                         </div>
                         <div className="p-6 bg-slate-50 flex justify-end gap-3">
                             <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 hover:bg-slate-200 rounded-lg">Cancel</button>
-                            <button onClick={handleAddTeacher} className="px-4 py-2 bg-blue-600 text-white rounded-lg">Save Teacher</button>
+                            <button onClick={handleAddTeacher} className="px-4 py-2 bg-blue-600 text-white rounded-lg">{editingTeacher ? 'Update Teacher' : 'Save Teacher'}</button>
                         </div>
                     </div>
                 </div>
