@@ -8,6 +8,7 @@ import ParentManagement from "./Pages/ParentManagement"
 import TeacherManagement from "./Pages/TeacherManagement"
 import PrincipalManagement from "./Pages/PrincipalManagement";
 import StudentManagement from "./Pages/StudentManagement"
+import SalaryManagement from "./Pages/SalaryManagement"
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path='/students/id-cards' element={<StudentManagement view="id_cards" />} />
           <Route path='/students/credentials' element={<StudentManagement view="credentials" />} />
 
+          <Route path='/SalaryManagement' element={<SalaryManagement />} />
           <Route path='/FeeManagement' element={<FeeManagement />} />
           <Route path='/exams' element={<Exams />} />
         </Routes>

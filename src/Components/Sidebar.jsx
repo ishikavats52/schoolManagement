@@ -11,7 +11,7 @@ import {
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const location = useLocation();
     // Initialize with the top-level group managed expanded
-    const [expandedGroups, setExpandedGroups] = useState(['user_management']);
+    const [expandedGroups, setExpandedGroups] = useState(['user_management', 'finance']);
 
     const toggleGroup = (groupId) => {
         setExpandedGroups(prev =>
@@ -51,7 +51,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 //     path: '/UserManagement',
                 //     icon: ShieldCheck
                 // },
-               
+
                 {
                     id: 'principal_nested',
                     title: 'Principal Management',
@@ -65,7 +65,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                         { title: 'Communication', path: '/principals/communication', icon: Mail },
                     ]
                 },
-                 {
+                {
                     id: 'teacher_nested',
                     title: 'Teacher Management',
                     icon: UserCog,
@@ -104,7 +104,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                         { title: 'Activity Log', path: '/parents/activity', icon: Activity },
                     ]
                 },
-                
+
             ]
         },
         {
@@ -124,6 +124,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             type: 'group',
             subMenus: [
                 { title: 'Fee Management', path: '/FeeManagement', icon: Banknote },
+                { title: 'Salary Management', path: '/SalaryManagement', icon: CreditCard },
             ]
         },
     ];
