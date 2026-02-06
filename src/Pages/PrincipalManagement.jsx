@@ -288,10 +288,10 @@ const PrincipalCommunication = ({ showToast }) => {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div className="lg:col-span-2 bg-white rounded-2xl text-slate-900 shadow-sm border border-slate-200 p-6">
                 <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Mail size={20} className="text-blue-600" /> New Broadcast</h3>
                 <div className="space-y-4">
-                    <select className="w-full p-2 border rounded-lg bg-slate-50">
+                    <select className="w-full p-2 border rounded-lg  bg-slate-50">
                         <option>All Staff</option>
                         <option>Teachers Only</option>
                         <option>Support Stuff</option>

@@ -11,14 +11,14 @@ function Header({ toggleSidebar, isSidebarOpen }) {
         </button>
 
         {/* Search Bar */}
-        <div className="flex items-center bg-gray-100 rounded-lg px-3 py-2 w-64 border border-transparent focus-within:bg-white focus-within:border-blue-500 transition-all">
+        {/* <div className="flex items-center bg-gray-100 rounded-lg px-3 py-2 w-64 border border-transparent focus-within:bg-white focus-within:border-blue-500 transition-all">
           <Search className="text-gray-400" size={18} />
           <input
             type="text"
             placeholder="Search..."
             className="bg-transparent border-none outline-none ml-2 text-sm text-gray-700 w-full placeholder-gray-400"
           />
-        </div>
+        </div> */}
       </div>
 
       <div className="flex items-center gap-4">

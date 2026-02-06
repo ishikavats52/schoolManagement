@@ -402,7 +402,7 @@ const StudentPromotion = ({ students, showToast }) => {
 
             <div className="space-y-2">
                 {students.map(student => (
-                    <div key={student.id} className="flex items-center justify-between p-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition">
+                    <div key={student.id} className="flex items-center justify-between p-3 border-b text-slate-600 border-slate-100 last:border-0 hover:bg-slate-50 transition">
                         <div className="flex items-center gap-3">
                             <input type="checkbox" className="rounded text-blue-600 focus:ring-blue-500" defaultChecked />
                             <span>{student.name}</span>
@@ -431,14 +431,14 @@ const StudentDocuments = ({ students, showToast }) => {
                         </div>
                     </div>
                     <div className="space-y-3">
-                        <div className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-sm">
+                        <div className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border text-slate-600 border-slate-200 text-sm">
                             <div className="flex items-center gap-2">
                                 <FileText size={16} className="text-blue-500" />
                                 <span>Birth Certificate</span>
                             </div>
                             <button onClick={() => handleView('Birth Certificate')} className="text-blue-600 hover:underline">View</button>
                         </div>
-                        <div className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-sm">
+                        <div className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border text-slate-600 border-slate-200 text-sm">
                             <div className="flex items-center gap-2">
                                 <FileText size={16} className="text-blue-500" />
                                 <span>Transfer Cert.</span>

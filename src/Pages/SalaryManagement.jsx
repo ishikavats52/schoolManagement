@@ -261,7 +261,7 @@ const SalaryManagement = () => {
                             <form onSubmit={updateSalaryDetails}>
                                 <div className="p-6 border-b border-slate-100">
                                     <h3 className="text-lg font-bold text-slate-900">Edit Salary Details</h3>
-                                </div>
+                              </div>
                                 <div className="p-6 space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-1">Base Salary</label>

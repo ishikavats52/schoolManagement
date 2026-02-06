@@ -46,7 +46,7 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
     const styles = getToastStyles();
 
     return (
-        <div className={`fixed top-6 right-6 z-[100] ${styles.bg} ${styles.border} border rounded-xl shadow-lg p-4 flex items-center gap-3 min-w-[320px] animate-in slide-in-from-top-5 duration-300`}>
+        <div className={`fixed top-6 right-6 z-100 ${styles.bg} ${styles.border} border rounded-xl shadow-lg p-4 flex items-center gap-3 min-w-[320px] animate-in slide-in-from-top-5 duration-300`}>
             {styles.icon}
             <p className={`${styles.text} font-medium flex-1`}>{message}</p>
             <button
