@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import {
     Search, Filter, Plus, Edit, Trash2, GraduationCap,
     MapPin, Phone, Mail, User, FileText, Calendar, Check, X,
-    ChevronRight, ArrowUpRight, CreditCard, Key, Upload, Download
+    ChevronRight, ArrowUpRight, CreditCard, Key, Upload, Download, Loader2
 } from 'lucide-react';
 import Toast from '../Components/Toast';
+import PageLoader from '../Components/PageLoader';
 
 const StudentManagement = ({ view = 'directory' }) => {
     // Core state
@@ -79,7 +80,7 @@ const StudentManagement = ({ view = 'directory' }) => {
             case 'documents': return <StudentDocuments students={students} showToast={showToast} />;
             case 'id_cards': return <StudentIDCards students={students} showToast={showToast} />;
             case 'credentials': return <StudentCredentials students={students} setStudents={setStudents} showToast={showToast} />;
-            case 'credentials': return <StudentCredentials students={students} setStudents={setStudents} showToast={showToast} />;
+
             case 'add_student': return <AddStudentForm onBack={() => { setCurrentView('directory'); setEditingStudent(null); }} onSave={handleSaveStudent} showToast={showToast} initialData={editingStudent} />;
             case 'edit_student': return <AddStudentForm onBack={() => { setCurrentView('directory'); setEditingStudent(null); }} onSave={handleSaveStudent} showToast={showToast} initialData={editingStudent} />;
             default: return <StudentDirectory students={students} setStudents={setStudents} showToast={showToast} onEditStudent={handleEditStudent} onAddStudent={() => { setEditingStudent(null); setCurrentView('add_student'); }} />;
@@ -141,6 +142,21 @@ const AddStudentForm = ({ onBack, onSave, showToast, initialData }) => {
 
         medicalCondition: 'Good', allergies: ['Peanuts'], medications: ['Inhaler'],
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 800);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const handleSaveStart = () => {
+        setIsSubmitting(true);
+        setTimeout(() => {
+            onSave(formData);
+            setIsSubmitting(false);
+        }, 1000);
+    };
 
     const [photoPreview, setPhotoPreview] = useState(null);
     const fileInputRef = React.useRef(null);
@@ -281,6 +297,20 @@ const AddStudentForm = ({ onBack, onSave, showToast, initialData }) => {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
+
+
+    if (isLoading) {
+        return (
+            <div className="h-full flex flex-col">
+                <button onClick={onBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-4 transition-colors w-fit">
+                    <ChevronRight className="rotate-180" size={20} /> Back to Directory
+                </button>
+                <div className="flex-1 min-h-[400px] flex items-center justify-center">
+                    <PageLoader />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 pb-10">
@@ -707,13 +737,25 @@ const AddStudentForm = ({ onBack, onSave, showToast, initialData }) => {
 
             <div className="flex justify-end gap-3 pt-4">
                 <button onClick={onBack} className="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors">Cancel</button>
-                <button onClick={() => onSave(formData)} className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
-                    {initialData ? 'Update Student' : 'Save Student'}
+                <button
+                    onClick={handleSaveStart}
+                    disabled={isSubmitting}
+                    className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 size={20} className="animate-spin" />
+                            Processing...
+                        </>
+                    ) : (
+                        initialData ? 'Update Student' : 'Save Student'
+                    )}
                 </button>
             </div>
         </div>
     );
 };
+
 
 
 /* --- Sub-Components --- */

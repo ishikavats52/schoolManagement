@@ -7,6 +7,7 @@ import {
     UserCog, Building2, UsersRound, FileText, CreditCard, Key, ClipboardList,
     ShieldCheck, Bell, Activity, UserPlus, Shield, Mail, Calendar // Added UserPlus, Shield, Mail, Calendar
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const location = useLocation();
@@ -193,13 +194,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
 
     return (
-        <div className={`h-screen w-72 bg-white flex flex-col fixed left-0 top-0 shadow-lg z-50 transition-transform duration-300 border-r border-slate-200 rounded-r-3xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        < motion.div
+            initial={{ x: -250 }}
+            animate={{ x: 0 }}
+            transition={{ type: "easeInOut", stiffness: 80 }}
+
+            className={`h-screen w-72 bg-white flex flex-col fixed left-0 top-0 shadow-lg z-50 transition-transform duration-300 border-r border-slate-200 rounded-r-3xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+
             <div className="p-6 border-b border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
                         <GraduationCap size={24} strokeWidth={3} />
                     </div>
-                    <div>
+                    <div >
                         <h1 className="text-xl font-bold text-slate-800 leading-none"></h1>
                         <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">School Admin</p>
                     </div>
@@ -222,7 +229,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     <span className="font-medium">Logout</span>
                 </button>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import {
     Search, Filter, Plus, Edit, Trash2, User, BookOpen,
     Calendar, CheckCircle, XCircle, Clock, Key,
-    FileText, Check, X, Shield, Mail, Phone, MapPin
+    FileText, Check, X, Shield, Mail, Phone, MapPin, Loader2
 } from 'lucide-react';
 import Toast from '../Components/Toast';
+import PageLoader from '../Components/PageLoader';
 
 const TeacherManagement = ({ view = 'directory' }) => {
     const [teachers, setTeachers] = useState([
@@ -77,6 +78,8 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
     const [newTeacher, setNewTeacher] = useState({
         name: '', email: '', phone: '', subject: '', education: ''
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isModalLoading, setIsModalLoading] = useState(false);
 
     const filteredTeachers = teachers.filter(t =>
         t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -89,24 +92,28 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
             return;
         }
 
-        if (editingTeacher) {
-            setTeachers(teachers.map(t => t.id === editingTeacher.id ? { ...t, ...newTeacher } : t));
-            showToast('Teacher updated successfully');
-        } else {
-            setTeachers([...teachers, {
-                id: teachers.length + 1,
-                employeeId: `TCH00${teachers.length + 1}`,
-                ...newTeacher,
-                classes: [],
-                status: 'Active',
-                experience: '0 Years',
-                hasLogin: false
-            }]);
-            showToast('Teacher added successfully');
-        }
-        setIsModalOpen(false);
-        setNewTeacher({ name: '', email: '', phone: '', subject: '', education: '' });
-        setEditingTeacher(null);
+        setIsSubmitting(true);
+        setTimeout(() => {
+            if (editingTeacher) {
+                setTeachers(teachers.map(t => t.id === editingTeacher.id ? { ...t, ...newTeacher } : t));
+                showToast('Teacher updated successfully');
+            } else {
+                setTeachers([...teachers, {
+                    id: teachers.length + 1,
+                    employeeId: `TCH00${teachers.length + 1}`,
+                    ...newTeacher,
+                    classes: [],
+                    status: 'Active',
+                    experience: '0 Years',
+                    hasLogin: false
+                }]);
+                showToast('Teacher added successfully');
+            }
+            setIsModalOpen(false);
+            setNewTeacher({ name: '', email: '', phone: '', subject: '', education: '' });
+            setEditingTeacher(null);
+            setIsSubmitting(false);
+        }, 1000);
     };
 
     const handleEdit = (teacher) => {
@@ -119,6 +126,8 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
             education: teacher.education
         });
         setIsModalOpen(true);
+        setIsModalLoading(true);
+        setTimeout(() => setIsModalLoading(false), 800);
     };
 
     return (
@@ -134,7 +143,11 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium flex items-center gap-2 shadow-sm">
+                <button onClick={() => {
+                    setIsModalOpen(true);
+                    setIsModalLoading(true);
+                    setTimeout(() => setIsModalLoading(false), 800);
+                }} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium flex items-center gap-2 shadow-sm">
                     <Plus size={20} /> Add Teacher
                 </button>
             </div>
@@ -219,16 +232,39 @@ const TeacherDirectory = ({ teachers, setTeachers, showToast }) => {
                             <button onClick={() => { setIsModalOpen(false); setEditingTeacher(null); }}><X className="text-slate-400" /></button>
                         </div>
                         <div className="p-6 space-y-4">
-                            <input className="w-full px-3 py-2 border rounded-lg" placeholder="Full Name" value={newTeacher.name} onChange={e => setNewTeacher({ ...newTeacher, name: e.target.value })} />
-                            <input className="w-full px-3 py-2 border rounded-lg" placeholder="Email" value={newTeacher.email} onChange={e => setNewTeacher({ ...newTeacher, email: e.target.value })} />
-                            <input className="w-full px-3 py-2 border rounded-lg" placeholder="Phone" value={newTeacher.phone} onChange={e => setNewTeacher({ ...newTeacher, phone: e.target.value })} />
-                            <input className="w-full px-3 py-2 border rounded-lg" placeholder="Subject Specialization" value={newTeacher.subject} onChange={e => setNewTeacher({ ...newTeacher, subject: e.target.value })} />
-                            <input className="w-full px-3 py-2 border rounded-lg" placeholder="Education (e.g. M.Sc.)" value={newTeacher.education} onChange={e => setNewTeacher({ ...newTeacher, education: e.target.value })} />
+                            {isModalLoading ? (
+                                <div className="flex items-center justify-center min-h-[300px]">
+                                    <PageLoader />
+                                </div>
+                            ) : (
+                                <>
+                                    <input className="w-full px-3 py-2 border rounded-lg" placeholder="Full Name" value={newTeacher.name} onChange={e => setNewTeacher({ ...newTeacher, name: e.target.value })} />
+                                    <input className="w-full px-3 py-2 border rounded-lg" placeholder="Email" value={newTeacher.email} onChange={e => setNewTeacher({ ...newTeacher, email: e.target.value })} />
+                                    <input className="w-full px-3 py-2 border rounded-lg" placeholder="Phone" value={newTeacher.phone} onChange={e => setNewTeacher({ ...newTeacher, phone: e.target.value })} />
+                                    <input className="w-full px-3 py-2 border rounded-lg" placeholder="Subject Specialization" value={newTeacher.subject} onChange={e => setNewTeacher({ ...newTeacher, subject: e.target.value })} />
+                                    <input className="w-full px-3 py-2 border rounded-lg" placeholder="Education (e.g. M.Sc.)" value={newTeacher.education} onChange={e => setNewTeacher({ ...newTeacher, education: e.target.value })} />
+                                </>
+                            )}
                         </div>
-                        <div className="p-6 bg-slate-50 flex justify-end gap-3">
-                            <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 hover:bg-slate-200 rounded-lg">Cancel</button>
-                            <button onClick={handleAddTeacher} className="px-4 py-2 bg-blue-600 text-white rounded-lg">{editingTeacher ? 'Update Teacher' : 'Save Teacher'}</button>
-                        </div>
+                        {!isModalLoading && (
+                            <div className="p-6 bg-slate-50 flex justify-end gap-3">
+                                <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 hover:bg-slate-200 rounded-lg">Cancel</button>
+                                <button
+                                    onClick={handleAddTeacher}
+                                    disabled={isSubmitting}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 size={16} className="animate-spin" />
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        editingTeacher ? 'Update Teacher' : 'Save Teacher'
+                                    )}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
