@@ -35,6 +35,27 @@ const SalaryManagement = () => {
         setIsModalOpen(true);
     };
 
+    const handleProcessAll = () => {
+        const pendingCount = salaries.filter(s => s.status !== 'Paid').length;
+        if (pendingCount === 0) {
+            showToast('No pending payments to process', 'info');
+            return;
+        }
+        if (window.confirm(`Are you sure you want to process payments for ${pendingCount} employees?`)) {
+            setSalaries(salaries.map(s =>
+                s.status !== 'Paid' ? { ...s, status: 'Paid', lastPaid: new Date().toISOString().split('T')[0] } : s
+            ));
+            showToast(`Successfully processed ${pendingCount} payments`);
+        }
+    };
+
+    const handleExport = () => {
+        showToast('Exporting Salary Report...', 'info');
+        setTimeout(() => {
+            showToast('Report downloaded successfully');
+        }, 1500);
+    };
+
     const confirmPayment = () => {
         if (!selectedTeacher) return;
         setSalaries(salaries.map(s =>
@@ -49,10 +70,14 @@ const SalaryManagement = () => {
         e.preventDefault();
         if (!editingSalary) return;
         const formData = new FormData(e.target);
-        const newBase = Number(formData.get('baseSalary'));
 
         setSalaries(salaries.map(s =>
-            s.id === editingSalary.id ? { ...s, baseSalary: newBase } : s
+            s.id === editingSalary.id ? {
+                ...s,
+                baseSalary: Number(formData.get('baseSalary')),
+                bonus: Number(formData.get('bonus')),
+                deductions: Number(formData.get('deductions'))
+            } : s
         ));
 
         showToast(`Salary details updated for ${editingSalary.name}`);
@@ -75,8 +100,8 @@ const SalaryManagement = () => {
     );
 
     // Stats
-    const totalPayout = salaries.reduce((acc, curr) => acc + curr.baseSalary, 0);
-    const pendingPayout = salaries.filter(s => s.status !== 'Paid').reduce((acc, curr) => acc + curr.baseSalary, 0);
+    const totalPayout = salaries.reduce((acc, curr) => acc + curr.baseSalary + curr.bonus - curr.deductions, 0);
+    const pendingPayout = salaries.filter(s => s.status !== 'Paid').reduce((acc, curr) => acc + curr.baseSalary + curr.bonus - curr.deductions, 0);
 
     return (
         <div className="space-y-6">
@@ -89,10 +114,10 @@ const SalaryManagement = () => {
                     <p className="text-slate-600 text-sm">Manage teacher salaries and payouts</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl font-medium flex items-center gap-2 hover:bg-slate-50">
+                    <button onClick={handleExport} className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl font-medium flex items-center gap-2 hover:bg-slate-50 transition shadow-sm">
                         <Download size={18} /> Export Report
                     </button>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-medium flex items-center gap-2 shadow-sm">
+                    <button onClick={handleProcessAll} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-medium flex items-center gap-2 shadow-sm transition active:scale-95">
                         <CreditCard size={18} /> Process All
                     </button>
                 </div>
@@ -162,7 +187,7 @@ const SalaryManagement = () => {
                         <thead className="bg-slate-50 text-slate-800 uppercase font-semibold">
                             <tr>
                                 <th className="px-6 py-4">Employee</th>
-                                <th className="px-6 py-4">Base Salary</th>
+                                <th className="px-6 py-4">Total Pay</th>
                                 <th className="px-6 py-4">Status</th>
                                 <th className="px-6 py-4">Last Paid</th>
                                 <th className="px-6 py-4 text-center">Actions</th>
@@ -178,7 +203,10 @@ const SalaryManagement = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 font-medium text-slate-900">
-                                        ${salary.baseSalary.toLocaleString()}
+                                        ${(salary.baseSalary + salary.bonus - salary.deductions).toLocaleString()}
+                                        <div className="text-[10px] text-slate-400">
+                                            Base: {salary.baseSalary} | B: {salary.bonus} | D: {salary.deductions}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusColor(salary.status)}`}>
@@ -261,7 +289,8 @@ const SalaryManagement = () => {
                             <form onSubmit={updateSalaryDetails}>
                                 <div className="p-6 border-b border-slate-100">
                                     <h3 className="text-lg font-bold text-slate-900">Edit Salary Details</h3>
-                              </div>
+                                    <p className="text-sm text-slate-500">{editingSalary.name} • {editingSalary.employeeId}</p>
+                                </div>
                                 <div className="p-6 space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-1">Base Salary</label>
@@ -274,6 +303,32 @@ const SalaryManagement = () => {
                                                 className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
                                                 required
                                             />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Bonus</label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500">+</span>
+                                                <input
+                                                    name="bonus"
+                                                    type="number"
+                                                    defaultValue={editingSalary.bonus}
+                                                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition-all"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Deductions</label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-500">-</span>
+                                                <input
+                                                    name="deductions"
+                                                    type="number"
+                                                    defaultValue={editingSalary.deductions}
+                                                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-rose-100 focus:border-rose-500 outline-none transition-all"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -19,6 +19,7 @@ const PrincipalManagement = ({ view = 'directory' }) => {
             permissions: { teachers: true, financials: false, curriculum: true, settings: false }
         }
     ]);
+    const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
 
     const showToast = (message, type = 'success') => setToast({ message, type });

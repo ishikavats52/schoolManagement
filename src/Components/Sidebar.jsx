@@ -11,13 +11,13 @@ import {
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const location = useLocation();
     // Initialize with the top-level group managed expanded
-    const [expandedGroups, setExpandedGroups] = useState(['user_management', 'finance']);
+    const [expandedGroups, setExpandedGroups] = useState(['finance']);
 
     const toggleGroup = (groupId) => {
         setExpandedGroups(prev =>
             prev.includes(groupId)
-                ? prev.filter(id => id !== groupId)
-                : [...prev, groupId]
+                ? prev.filter(id => id !== groupId) // Collapse if already expanded
+                : [...prev, groupId] // Expand if collapsed
         );
     };
 
@@ -41,70 +41,66 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             type: 'single'
         },
         {
-            id: 'user_management',
-            title: 'User Management',
+            id: 'principals',
+            title: 'Principals',
+            icon: UserPlus, // Using UserPlus as a placeholder, or maybe Shield
+            type: 'group',
+            subMenus: [
+                { title: 'Directory', path: '/PrincipalManagement', icon: Users },
+                { title: 'Permissions', path: '/principals/permissions', icon: Shield },
+                { title: 'Reports Access', path: '/principals/reports', icon: FileText },
+                { title: 'Performance', path: '/principals/performance', icon: Activity },
+                { title: 'Communication', path: '/principals/communication', icon: Mail },
+            ]
+        },
+        {
+            id: 'teachers',
+            title: 'Teachers',
             icon: UserCog,
             type: 'group',
             subMenus: [
-                // {
-                //     title: 'System Users',
-                //     path: '/UserManagement',
-                //     icon: ShieldCheck
-                // },
-
-                {
-                    id: 'principal_nested',
-                    title: 'Principal Management',
-                    icon: UserPlus, // Using UserPlus as a placeholder, or maybe Shield
-                    type: 'nested_group',
-                    subMenus: [
-                        { title: 'Directory', path: '/PrincipalManagement', icon: Users },
-                        { title: 'Permissions', path: '/principals/permissions', icon: Shield },
-                        { title: 'Reports Access', path: '/principals/reports', icon: FileText },
-                        { title: 'Performance', path: '/principals/performance', icon: Activity },
-                        { title: 'Communication', path: '/principals/communication', icon: Mail },
-                    ]
-                },
-                {
-                    id: 'teacher_nested',
-                    title: 'Teacher Management',
-                    icon: UserCog,
-                    type: 'nested_group',
-                    subMenus: [
-                        { title: 'Directory', path: '/TeacherManagement', icon: Users },
-                        { title: 'Timetable', path: '/teachers/timetable', icon: CalendarCheck },
-                        { title: 'Attendance', path: '/teachers/attendance', icon: ClipboardList },
-                        { title: 'Leaves', path: '/teachers/leaves', icon: Calendar }, // Changed icon from FileText to Calendar
-                        { title: 'Credentials', path: '/teachers/credentials', icon: Key },
-                    ]
-                },
-                {
-                    id: 'students_nested',
-                    title: 'Student Management',
-                    icon: GraduationCap,
-                    type: 'nested_group',
-                    subMenus: [
-                        { title: 'Directory', path: '/StudentManagement', icon: Users },
-                        { title: 'Attendance', path: '/students/attendance', icon: CalendarCheck },
-                        { title: 'Promotion', path: '/students/promotion', icon: ChevronRight },
-                        { title: 'Documents', path: '/students/documents', icon: FileText },
-                        { title: 'ID Cards', path: '/students/id-cards', icon: CreditCard },
-                        { title: 'Credentials', path: '/students/credentials', icon: Key },
-                    ]
-                },
-                {
-                    id: 'parent_nested',
-                    title: 'Parent Management',
-                    icon: UsersRound,
-                    type: 'nested_group',
-                    subMenus: [
-                        { title: 'Directory', path: '/ParentManagement', icon: Users },
-                        { title: 'Login Control', path: '/parents/login-control', icon: Key },
-                        { title: 'Notifications', path: '/parents/notifications', icon: Bell },
-                        { title: 'Activity Log', path: '/parents/activity', icon: Activity },
-                    ]
-                },
-
+                { title: 'Directory', path: '/TeacherManagement', icon: Users },
+                { title: 'Timetable', path: '/teachers/timetable', icon: CalendarCheck },
+                { title: 'Attendance', path: '/teachers/attendance', icon: ClipboardList },
+                { title: 'Leaves', path: '/teachers/leaves', icon: Calendar }, // Changed icon from FileText to Calendar
+                { title: 'Credentials', path: '/teachers/credentials', icon: Key },
+            ]
+        },
+        {
+            id: 'students',
+            title: 'Students',
+            icon: GraduationCap,
+            type: 'group',
+            subMenus: [
+                { title: 'Directory', path: '/StudentManagement', icon: Users },
+                { title: 'Attendance', path: '/students/attendance', icon: CalendarCheck },
+                { title: 'Promotion', path: '/students/promotion', icon: ChevronRight },
+                { title: 'Documents', path: '/students/documents', icon: FileText },
+                { title: 'ID Cards', path: '/students/id-cards', icon: CreditCard },
+                { title: 'Credentials', path: '/students/credentials', icon: Key },
+            ]
+        },
+        {
+            id: 'parents',
+            title: 'Parents',
+            icon: UsersRound,
+            type: 'group',
+            subMenus: [
+                { title: 'Directory', path: '/ParentManagement', icon: Users },
+                { title: 'Login Control', path: '/parents/login-control', icon: Key },
+                { title: 'Notifications', path: '/parents/notifications', icon: Bell },
+                { title: 'Activity Log', path: '/parents/activity', icon: Activity },
+            ]
+        },
+        {
+            id: 'admissions',
+            title: 'Admissions',
+            icon: UserPlus,
+            type: 'group',
+            subMenus: [
+                { title: 'Dashboard', path: '/AdmissionManagement', icon: LayoutDashboard },
+                { title: 'Applications', path: '/admissions/applications', icon: ClipboardList },
+                { title: 'Forms', path: '/admissions/forms', icon: FileText },
             ]
         },
         {
@@ -140,12 +136,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 <li key={item.path || item.title}>
                     <Link
                         to={item.path}
-                        className={`flex items - center gap - 3 rounded - lg transition - all duration - 200
+                        className={`flex items-center gap-4 rounded-lg transition-all duration-200
               ${level === 0 ? 'px-4 py-3' : 'px-4 py-2 text-sm'}
               ${level > 0 ? 'ml-0' : ''}
               ${active
-                                ? 'bg-blue-600 text-white shadow-sm'
-                                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                                ? 'bg-blue-50 text-blue-600 font-medium'
+                                : 'text-slate-500 hover:bg-slate-50 hover:text-blue-600'
                             } `}
                     >
                         <item.icon size={level === 0 ? 20 : 16} />
@@ -167,10 +163,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                         e.stopPropagation();
                         toggleGroup(item.id);
                     }}
-                    className={`w - full flex items - center justify - between rounded - xl transition - all duration - 200
+                    className={`w-full flex items-center justify-between rounded-xl transition-all duration-200
             ${level === 0 ? 'px-4 py-3' : 'px-4 py-2 text-sm'}
-            ${(hasActiveChild || isExpanded) && level === 0 ? 'bg-slate-800 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}
-            ${level > 0 && isExpanded ? 'text-white' : ''}
+            ${(hasActiveChild || isExpanded) && level === 0 ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50 hover:text-blue-600'}
+            ${level > 0 && isExpanded ? 'text-blue-600' : ''}
 `}
                 >
                     <div className="flex items-center gap-3">
@@ -186,7 +182,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
                 {/* Render Children */}
                 {isExpanded && (
-                    <ul className={`mt - 1 space - y - 1 ${level === 0 ? 'ml-4 border-l border-slate-700 pl-2' : 'ml-4 border-l border-slate-700 pl-2'} `}>
+                    <ul className={`mt-1 space-y-1 ${level === 0 ? 'ml-4 border-l border-slate-200 pl-2' : 'ml-4 border-l border-slate-200 pl-2'} `}>
                         {item.subMenus.map(subItem => renderMenuItem(subItem, level + 1))}
                     </ul>
                 )}
@@ -197,11 +193,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
 
     return (
-        <div className={`h-screen w-72 bg-slate-900 text-white flex flex-col fixed left-0 top-0 shadow-lg z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-            <div className="p-6 border-b border-slate-700 flex items-center justify-between">
-                <h1 className="text-2xl font-bold bg-blue-500 bg-clip-text text-transparent">
-                    AdminPanel
-                </h1>
+        <div className={`h-screen w-72 bg-white flex flex-col fixed left-0 top-0 shadow-lg z-50 transition-transform duration-300 border-r border-slate-200 rounded-r-3xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                        <GraduationCap size={24} strokeWidth={3} />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-slate-800 leading-none"></h1>
+                        <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">School Admin</p>
+                    </div>
+                </div>
                 <button onClick={toggleSidebar} className="lg:hidden text-slate-400 hover:text-white">
                     {/* Close button for mobile if needed, or just reuse toggle */}
                     <ChevronRight className="rotate-180" size={24} />
@@ -214,8 +216,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 </ul>
             </nav>
 
-            <div className="p-4 border-t border-slate-800">
-                <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors">
+            <div className="p-4 border-t border-slate-200">
+                <button className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors">
                     <LogOut size={20} />
                     <span className="font-medium">Logout</span>
                 </button>

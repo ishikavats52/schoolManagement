@@ -12,11 +12,11 @@ const Layout = ({ children }) => {
     // User had w-69 which is ~276px. ml-64 is 256px.
 
     return (
-        <div className="flex h-screen bg-gray-50 font-sans">
+        <div className="flex h-screen bg-slate-50 font-sans">
             <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
             <div className={`flex-1 flex flex-col transition-all duration-300 overflow-hidden ${isSidebarOpen ? 'ml-72' : 'ml-0'}`}>
                 <Header toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 scroll-smooth">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-6 scroll-smooth">
                     {children}
                 </main>
             </div>

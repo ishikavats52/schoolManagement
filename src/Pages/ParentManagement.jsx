@@ -66,7 +66,7 @@ const ParentDirectory = ({ parents, setParents, showToast }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingParent, setEditingParent] = useState(null);
     const [newParent, setNewParent] = useState({
-        name: '', email: '', phone: '', relationship: 'Father', linkedStudents: 0
+        name: '', email: '', password: '', phone: '', relationship: 'Father', linkedStudents: 0
     });
 
     const filteredParents = parents.filter(p =>
@@ -97,7 +97,7 @@ const ParentDirectory = ({ parents, setParents, showToast }) => {
             showToast('Parent added successfully!');
         }
         setIsModalOpen(false);
-        setNewParent({ name: '', email: '', phone: '', relationship: 'Father', linkedStudents: 0 });
+        setNewParent({ name: '', email: '', password: 'password', phone: '', relationship: 'Father', linkedStudents: 0 });
         setEditingParent(null);
     };
 
@@ -202,7 +202,7 @@ const ParentDirectory = ({ parents, setParents, showToast }) => {
                                 </td>
                             </tr>
 
-                            
+
                         ))}
                     </tbody>
                 </table>
@@ -238,6 +238,16 @@ const ParentDirectory = ({ parents, setParents, showToast }) => {
                                         placeholder="parent@example.com"
                                         value={newParent.email}
                                         onChange={e => setNewParent({ ...newParent, email: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Password</label>
+                                    <input
+                                        type="password"
+                                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 placeholder-slate-400"
+                                        placeholder="Password"
+                                        value={newParent.password}
+                                        onChange={e => setNewParent({ ...newParent, password: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-2">
