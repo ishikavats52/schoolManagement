@@ -212,7 +212,7 @@ const AdmissionApplications = ({ applications, setApplications, showToast }) => 
             setShowViewModal(false);
         }
         setAction(null);
-        if (!showViewModal) setSelectedApp(null); // Keep selectedApp if viewing details
+        if (!showViewModal) setSelectedApp(null);
     };
 
     return (
