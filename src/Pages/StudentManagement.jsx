@@ -142,6 +142,101 @@ const AddStudentForm = ({ onBack, onSave, showToast, initialData }) => {
         medicalCondition: 'Good', allergies: ['Peanuts'], medications: ['Inhaler'],
     });
 
+    const [photoPreview, setPhotoPreview] = useState(null);
+    const fileInputRef = React.useRef(null);
+
+    const handlePhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 4 * 1024 * 1024) {
+                showToast('File size must be less than 4MB', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPhotoPreview(reader.result);
+                setFormData(prev => ({ ...prev, photo: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemovePhoto = () => {
+        setPhotoPreview(null);
+        setFormData(prev => ({ ...prev, photo: null }));
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current.click();
+    };
+
+    // Father's Photo Logic
+    const [fatherPhotoPreview, setFatherPhotoPreview] = useState(null);
+    const fatherFileInputRef = React.useRef(null);
+
+    const handleFatherPhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 4 * 1024 * 1024) {
+                showToast('File size must be less than 4MB', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFatherPhotoPreview(reader.result);
+                setFormData(prev => ({ ...prev, fatherPhoto: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveFatherPhoto = () => {
+        setFatherPhotoPreview(null);
+        setFormData(prev => ({ ...prev, fatherPhoto: null }));
+        if (fatherFileInputRef.current) {
+            fatherFileInputRef.current.value = '';
+        }
+    };
+
+    const triggerFatherFileInput = () => {
+        fatherFileInputRef.current.click();
+    };
+
+    // Mother's Photo Logic
+    const [motherPhotoPreview, setMotherPhotoPreview] = useState(null);
+    const motherFileInputRef = React.useRef(null);
+
+    const handleMotherPhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 4 * 1024 * 1024) {
+                showToast('File size must be less than 4MB', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setMotherPhotoPreview(reader.result);
+                setFormData(prev => ({ ...prev, motherPhoto: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveMotherPhoto = () => {
+        setMotherPhotoPreview(null);
+        setFormData(prev => ({ ...prev, motherPhoto: null }));
+        if (motherFileInputRef.current) {
+            motherFileInputRef.current.value = '';
+        }
+    };
+
+    const triggerMotherFileInput = () => {
+        motherFileInputRef.current.click();
+    };
+
     React.useEffect(() => {
         if (initialData) {
             // Handle data mapping for legacy/mock data or ensure fields are populated
@@ -166,6 +261,16 @@ const AddStudentForm = ({ onBack, onSave, showToast, initialData }) => {
                 ...prev,
                 ...parsedData
             }));
+
+            if (parsedData.photo) {
+                setPhotoPreview(parsedData.photo);
+            }
+            if (parsedData.fatherPhoto) {
+                setFatherPhotoPreview(parsedData.fatherPhoto);
+            }
+            if (parsedData.motherPhoto) {
+                setMotherPhotoPreview(parsedData.motherPhoto);
+            }
         }
     }, [initialData]);
 
@@ -193,11 +298,29 @@ const AddStudentForm = ({ onBack, onSave, showToast, initialData }) => {
                     <div className="flex flex-col md:flex-row gap-6">
                         {/* Photo Upload */}
                         <div className="flex flex-col gap-3 shrink-0">
-                            <div className="w-32 h-32 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center text-slate-400 gap-2 cursor-pointer hover:border-blue-500 hover:text-blue-500 transition-colors group">
-                                <Upload size={24} className="group-hover:scale-110 transition-transform" />
-                                <span className="text-xs font-medium">Upload Photo</span>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handlePhotoUpload}
+                                className="hidden"
+                                accept="image/*"
+                            />
+                            <div
+                                onClick={triggerFileInput}
+                                className={`w-32 h-32 rounded-xl border-2 border-dashed ${photoPreview ? 'border-blue-500' : 'border-slate-300'} bg-slate-50 flex flex-col items-center justify-center text-slate-400 gap-2 cursor-pointer hover:border-blue-500 hover:text-blue-500 transition-colors group overflow-hidden relative`}
+                            >
+                                {photoPreview ? (
+                                    <img src={photoPreview} alt="Student Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <>
+                                        <Upload size={24} className="group-hover:scale-110 transition-transform" />
+                                        <span className="text-xs font-medium">Upload Photo</span>
+                                    </>
+                                )}
                             </div>
-                            <button className="text-xs text-red-500 hover:text-red-600 font-medium">Remove</button>
+                            {photoPreview && (
+                                <button onClick={handleRemovePhoto} className="text-xs text-red-500 hover:text-red-600 font-medium">Remove</button>
+                            )}
                             <p className="text-[10px] text-slate-400 text-center max-w-[128px]">Max size 4MB, JPG/PNG</p>
                         </div>
 
@@ -319,12 +442,25 @@ const AddStudentForm = ({ onBack, onSave, showToast, initialData }) => {
                         <h3 className="text-sm font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Father's Info</h3>
                         <div className="flex items-start gap-6">
                             <div className="flex flex-col gap-3">
-                                <div className="w-24 h-24 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400">
-                                    <User size={24} />
+                                <input
+                                    type="file"
+                                    ref={fatherFileInputRef}
+                                    onChange={handleFatherPhotoUpload}
+                                    className="hidden"
+                                    accept="image/*"
+                                />
+                                <div className={`w-24 h-24 rounded-xl border ${fatherPhotoPreview ? 'border-blue-500' : 'border-slate-200'} bg-slate-50 flex items-center justify-center text-slate-400 overflow-hidden relative`}>
+                                    {fatherPhotoPreview ? (
+                                        <img src={fatherPhotoPreview} alt="Father" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <User size={24} />
+                                    )}
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="px-3 py-1 bg-white border border-slate-200 rounded text-xs font-medium text-slate-600 hover:bg-slate-50">Upload</button>
-                                    <button className="px-3 py-1 bg-red-50 border border-red-100 rounded text-xs font-medium text-red-600 hover:bg-red-100">Remove</button>
+                                    <button onClick={triggerFatherFileInput} className="px-3 py-1 bg-white border border-slate-200 rounded text-xs font-medium text-slate-600 hover:bg-slate-50">Upload</button>
+                                    {fatherPhotoPreview && (
+                                        <button onClick={handleRemoveFatherPhoto} className="px-3 py-1 bg-red-50 border border-red-100 rounded text-xs font-medium text-red-600 hover:bg-red-100">Remove</button>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -353,12 +489,25 @@ const AddStudentForm = ({ onBack, onSave, showToast, initialData }) => {
                         <h3 className="text-sm font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Mother's Info</h3>
                         <div className="flex items-start gap-6">
                             <div className="flex flex-col gap-3">
-                                <div className="w-24 h-24 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400">
-                                    <User size={24} />
+                                <input
+                                    type="file"
+                                    ref={motherFileInputRef}
+                                    onChange={handleMotherPhotoUpload}
+                                    className="hidden"
+                                    accept="image/*"
+                                />
+                                <div className={`w-24 h-24 rounded-xl border ${motherPhotoPreview ? 'border-blue-500' : 'border-slate-200'} bg-slate-50 flex items-center justify-center text-slate-400 overflow-hidden relative`}>
+                                    {motherPhotoPreview ? (
+                                        <img src={motherPhotoPreview} alt="Mother" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <User size={24} />
+                                    )}
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="px-3 py-1 bg-white border border-slate-200 rounded text-xs font-medium text-slate-600 hover:bg-slate-50">Upload</button>
-                                    <button className="px-3 py-1 bg-red-50 border border-red-100 rounded text-xs font-medium text-red-600 hover:bg-red-100">Remove</button>
+                                    <button onClick={triggerMotherFileInput} className="px-3 py-1 bg-white border border-slate-200 rounded text-xs font-medium text-slate-600 hover:bg-slate-50">Upload</button>
+                                    {motherPhotoPreview && (
+                                        <button onClick={handleRemoveMotherPhoto} className="px-3 py-1 bg-red-50 border border-red-100 rounded text-xs font-medium text-red-600 hover:bg-red-100">Remove</button>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
